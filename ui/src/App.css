@@ -1,0 +1,47 @@
+/* Custom CSS for RepairZone */
+
+body {
+  background-color: #f8f9fa; /* Light background */
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.service-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+  height: 120px; /* Fixed height for service cards */
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.service-card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Animations for booking status update */
+.booking-status-alert {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.booking-status-alert.fade-in {
+  opacity: 1;
+}
+
+/* Animation for buttons on hover/active */
+.animate-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.animate-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
