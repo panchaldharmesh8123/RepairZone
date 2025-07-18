@@ -54,6 +54,8 @@ function Bookings() {
                 <th scope="col">Service</th>
                 <th scope="col">Date</th>
                 <th scope="col">Time</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Address</th> 
                 <th scope="col">Status</th>
                 <th scope="col">Worker</th>
               </tr>
@@ -64,6 +66,8 @@ function Bookings() {
                   <td>{booking.service.name}</td>
                   <td>{new Date(booking.date).toLocaleDateString()}</td>
                   <td>{booking.time}</td>
+                  <td>{booking.phoneNumber}</td>
+                  <td>{booking.address}</td>
                   <td>
                     <span
                       className={`badge ${

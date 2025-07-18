@@ -69,6 +69,8 @@ function WorkerPanel() {
                 <th scope="col">Date</th>
                 <th scope="col">Time</th>
                 <th scope="col">Customer</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Address</th>
                 <th scope="col">Status</th>
                 <th scope="col">Actions</th>
               </tr>
@@ -80,6 +82,8 @@ function WorkerPanel() {
                   <td>{new Date(req.date).toLocaleDateString()}</td>
                   <td>{req.time}</td>
                   <td>{req.user.name}</td>
+                  <td>{req.phoneNumber}</td>
+                  <td>{req.address}</td>
                   <td>
                     <span
                       className={`badge ${

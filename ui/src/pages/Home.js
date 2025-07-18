@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "react-router-dom";
-
 import { useState, useEffect } from "react";
 import {
   Hand,
@@ -14,7 +13,6 @@ import {
   Factory,
   ScrollText,
   Building,
-  PaintRoller,
 } from "lucide-react"; // Import various icons
 import Spinner from "../components/Spinner";
 import Toast from "../components/Toast";
@@ -32,7 +30,6 @@ const serviceIcons = {
   "Appliance Repair": Lightbulb,
   "Document Services": ScrollText,
   "Industrial Services": Factory,
-  "Home Painting": PaintRoller, // Reusing Wrench for simplicity
 };
 
 function Home() {
@@ -47,6 +44,8 @@ function Home() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -81,32 +80,23 @@ function Home() {
     setShowToast(true);
   };
 
-  const sendWhatsApp = () => {
-    const serviceName =
-      services.find((s) => s._id === selectedService)?.name || "N/A";
-    const message = `New Booking Details:
-Service: ${serviceName}
-Date: ${bookingDate}
-name: ${user?.name || "Guest"}
-Time: ${bookingTime}`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const phoneNumber = "919998460334"; // Replace with your WhatsApp number (without +)
-
-    window.open(
-      `https://wa.me/${phoneNumber}?text=${encodedMessage}`,
-      "_blank"
-    );
-  };
-
   const handleBooking = async (e) => {
     e.preventDefault();
     if (!user) {
       showToastMessage("Please login to book a service.", "error");
       return;
     }
-    if (!selectedService || !bookingDate || !bookingTime) {
-      showToastMessage("Please fill all booking details.", "error");
+    if (
+      !selectedService ||
+      !bookingDate ||
+      !bookingTime ||
+      !phoneNumber ||
+      !address
+    ) {
+      showToastMessage(
+        "Please fill all booking details including phone and address.",
+        "error"
+      );
       return;
     }
 
@@ -121,21 +111,17 @@ Time: ${bookingTime}`;
           serviceId: selectedService,
           date: bookingDate,
           time: bookingTime,
+          phoneNumber, // Add phone number
+          address, // Add address
         },
-        user.token
+        localStorage.getItem("token")
       );
-      console.log("Booking response:", response);
-      if (!response || !response.success) {
-        throw new Error(response.message || "Booking failed.");
-      }
-      console.log("Booking token:", localStorage.getItem("token"));
 
       showToastMessage("Service booked successfully!", "success");
       setBookingStatus({ message: "Booking Confirmed!", type: "success" });
-      // Clear form after successful booking (optional)
-      // setSelectedService(services[0]?._id || '');
-      // setBookingDate('');
-      // setBookingTime('');
+      // Optionally clear form fields after successful booking
+      setPhoneNumber("");
+      setAddress("");
     } catch (error) {
       console.error("Booking failed:", error);
       showToastMessage(error.message || "Failed to book service.", "error");
@@ -150,8 +136,8 @@ Time: ${bookingTime}`;
 
   return (
     <div className="card shadow-sm p-4">
-      <h1 className="h4 mb-4 ">
-        RepairZone - Full Stack Service Booking Website
+      <h1 className="h4 mb-4">
+        RepairZone - Service Booking Website
       </h1>
 
       <div className="mb-4">
@@ -159,17 +145,15 @@ Time: ${bookingTime}`;
         {loadingServices ? (
           <Spinner />
         ) : (
-          <div className="row row-cols-1 row-cols-md-4 g-3">
+          <div className="row row-cols-2 row-cols-md-4 g-3">
             {services.map((service) => {
               const IconComponent = serviceIcons[service.name] || Wrench; // Default icon
               return (
                 <div key={service._id} className="col">
                   <div className="card h-100 text-center service-card shadow-sm">
                     <div className="card-body d-flex flex-column justify-content-center align-items-center">
-                      <IconComponent size={70} className="mb-2 text-primary" />
-                      <p className="card-text fw-bold text-transform-capitalize">
-                        {service.name}
-                      </p>
+                      <IconComponent size={48} className="mb-2 text-primary" />
+                      <p className="card-text fw-bold">{service.name}</p>
                     </div>
                   </div>
                 </div>
@@ -230,10 +214,37 @@ Time: ${bookingTime}`;
                   />
                 </div>
               </div>
+              <div className="mb-3">
+                <label htmlFor="phoneNumber" className="form-label">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  className="form-control"
+                  id="phoneNumber"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="e.g., +1234567890"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="address" className="form-label">
+                  Address
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="e.g., 123 Main St, City, Country"
+                  required
+                />
+              </div>
               <button
                 type="submit"
-                className="btn btn-outline-primary w-100"
-                onClick={sendWhatsApp}
+                className="btn btn-primary w-100"
                 disabled={loadingBooking}
               >
                 {loadingBooking ? <Spinner /> : "Book Service"}
@@ -255,8 +266,14 @@ Time: ${bookingTime}`;
                 <p className="mb-1">
                   <strong>Date:</strong> {bookingDate}
                 </p>
-                <p className="mb-0">
+                <p className="mb-1">
                   <strong>Time:</strong> {bookingTime} AM
+                </p>
+                <p className="mb-1">
+                  <strong>Phone:</strong> {phoneNumber}
+                </p>
+                <p className="mb-0">
+                  <strong>Address:</strong> {address}
                 </p>
               </div>
             ) : (
@@ -282,41 +299,29 @@ Time: ${bookingTime}`;
       {user && user.role === "worker" && (
         <div className="card shadow-sm p-4 mt-4">
           <h2 className="h5 mb-3">Worker Panel</h2>
-          <Link
-            to="/worker-panel"
-            className="btn btn-sm btn-outline-primary mb-2"
-          >
-            Worker Panel
-          </Link>
+          <p className="text-muted">
+            Navigate to "Worker Panel" in the navbar for detailed view.
+          </p>
           {/* This section is primarily illustrative, full functionality in WorkerPanel.js */}
         </div>
       )}
 
       {user && user.role === "admin" && (
-        <div className="card shadow-sm p-4 mt-4">
+        <div className="card shadow-sm p-4 mt-4 ">
           <h2 className="h5 mb-3">Admin Dashboard</h2>
-          <ul className="list-unstyled">
+          <ul className="list-unstyled d-flex flex-row flex-wrap gap-2">
             <li>
-              <Link
-                to="/admin-dashboard"
-                className="btn btn-sm btn-outline-primary mb-2"
-              >
+              <Link to="/admin-dashboard" className=" btn btn-outline-primary ">
                 Manage Users
               </Link>
             </li>
             <li>
-              <Link
-                to="/admin-dashboard"
-                className="btn btn-sm btn-outline-danger mb-2"
-              >
+              <Link to="/admin-dashboard" className="btn btn-outline-danger ">
                 Manage Services
               </Link>
             </li>
             <li>
-              <Link
-                to="/admin-dashboard"
-                className="btn btn-sm btn-outline-dark mb-2"
-              >
+              <Link to="/admin-dashboard" className="btn btn-outline-dark">
                 Manage Workers
               </Link>
             </li>

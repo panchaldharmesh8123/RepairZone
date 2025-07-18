@@ -19,6 +19,14 @@ const BookingSchema = new mongoose.Schema({
     type: String, // e.g., "09:00 AM"
     required: true,
   },
+   phoneNumber: { // New field
+    type: String,
+    required: true,
+  },
+  address: { // New field
+    type: String,
+    required: true,
+  },
   status: {
     type: String,
     enum: ['Pending', 'Confirmed', 'In Progress', 'Completed', 'Rejected'],
