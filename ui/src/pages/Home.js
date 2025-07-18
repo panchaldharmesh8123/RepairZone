@@ -136,9 +136,7 @@ function Home() {
 
   return (
     <div className="card shadow-sm p-4">
-      <h1 className="h4 mb-4">
-        RepairZone - Service Booking Website
-      </h1>
+      <h1 className="h4 mb-4">RepairZone – Service Booking Web Application</h1>
 
       <div className="mb-4">
         <h2 className="h5 mb-3">Service Listing</h2>
