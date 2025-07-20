@@ -1,0 +1,20 @@
+{
+  "name": "service",
+  "version": "1.0.0",
+  "description": "**RepairZone** is a full-stack web application that allows users to easily book home repair and maintenance services like AC repair, plumbing, electrical work, carpentry, and more. The platform features role-based authentication and dashboards for **Users**, **Workers**, and **Admins**.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/panchaldharmesh8123/RepairZone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/panchaldharmesh8123/RepairZone/issues"
+  },
+  "homepage": "https://github.com/panchaldharmesh8123/RepairZone#readme"
+}

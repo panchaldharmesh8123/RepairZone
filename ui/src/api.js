@@ -7,7 +7,7 @@ export const apiCall = async (url, method = "GET", data = null, token = null) =>
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`http://localhost:5000${url}`, {
+  const res = await fetch(`https://repairzone-backend.onrender.com${url}`, {
     method,
     headers,
     body: data ? JSON.stringify(data) : null,
