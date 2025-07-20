@@ -1,4 +1,9 @@
-export const apiCall = async (url, method = "GET", data = null, token = null) => {
+export const apiCall = async (
+  url,
+  method = "GET",
+  data = null,
+  token = null
+) => {
   const headers = {
     "Content-Type": "application/json",
   };
@@ -7,7 +12,7 @@ export const apiCall = async (url, method = "GET", data = null, token = null) =>
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`https://repairzone-backend.onrender.com${url}`, {
+  const res = await fetch(`https://repairzone-backend.onrender.com`, {
     method,
     headers,
     body: data ? JSON.stringify(data) : null,
