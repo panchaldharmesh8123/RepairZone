@@ -11,3 +11,32 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* ✅ WhatsApp Floating Button (Fixed Bottom-Right) */
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;        /* Distance from bottom */
+  right: 20px;         /* Distance from right */
+  width: 60px;
+  height: 60px;
+  background-color: #25D366; /* ✅ Official WhatsApp Green */
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.3s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.15); 
+  background-color: #1ebe5d; /* Slightly darker green on hover */
+}
+
+.whatsapp-float svg {
+  color: white; /* Ensure WhatsApp icon is white */
+}
+

@@ -13,11 +13,13 @@ import {
   Factory,
   ScrollText,
   Building,
-} from "lucide-react"; // Import various icons
+  MessageCircle, // ✅ WhatsApp Icon
+} from "lucide-react";
 import Spinner from "../components/Spinner";
 import Toast from "../components/Toast";
 import { useAuth } from "../context/AuthContext";
 import { apiCall } from "../api";
+import "../index.css";
 
 const serviceIcons = {
   Plumbing: Wrench,
@@ -41,7 +43,7 @@ function Home() {
   const [selectedService, setSelectedService] = useState("");
   const [bookingDate, setBookingDate] = useState("");
   const [bookingTime, setBookingTime] = useState("");
-  const [bookingStatus, setBookingStatus] = useState(null); // { message: string, type: 'success' | 'error' }
+  const [bookingStatus, setBookingStatus] = useState(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
@@ -54,7 +56,7 @@ function Home() {
         const response = await apiCall("/api/services", "GET");
         setServices(response);
         if (response.length > 0) {
-          setSelectedService(response[0]._id); // Pre-select the first service
+          setSelectedService(response[0]._id);
         }
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -66,13 +68,12 @@ function Home() {
 
     fetchServices();
 
-    // Set default date and time
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
     setBookingDate(`${yyyy}-${mm}-${dd}`);
-    setBookingTime("09:00"); // Default time
+    setBookingTime("09:00");
   }, []);
 
   const showToastMessage = (message, type) => {
@@ -121,7 +122,6 @@ function Home() {
       showToastMessage("Service booked successfully!", "success");
       setBookingStatus({ message: "Booking Confirmed!", type: "success" });
 
-      // ✅ Redirect immediately
       navigate("/bookings", { replace: true });
 
       setPhoneNumber("");
@@ -142,6 +142,7 @@ function Home() {
     <div className="card shadow-sm p-4">
       <h1 className="h4 mb-4">RepairZone – Service Booking Web Application</h1>
 
+      {/* Service Listing */}
       <div className="mb-4">
         <h2 className="h5 mb-3">Service Listing</h2>
         {loadingServices ? (
@@ -149,7 +150,7 @@ function Home() {
         ) : (
           <div className="row row-cols-2 row-cols-md-4 g-3">
             {services.map((service) => {
-              const IconComponent = serviceIcons[service.name] || Wrench; // Default icon
+              const IconComponent = serviceIcons[service.name] || Wrench;
               return (
                 <div key={service._id} className="col">
                   <div className="card h-100 text-center service-card shadow-sm">
@@ -164,16 +165,18 @@ function Home() {
           </div>
         )}
       </div>
+
+      {/* Pricing */}
       <div className="mb-4 card text-center shadow-sm p-4">
-        <h2 className="h5 mb-3">
-          {" "}
-          Price Per Days (9:00am to 6:00pm) If You Want
-        </h2>
+        <h2 className="h5 mb-3">Price Per Day (9:00am to 6:00pm)</h2>
         <p className="text-muted">
           <strong>Rs. 1200</strong> (All Services Included)
         </p>
       </div>
+
+      {/* Booking & Report Section */}
       <div className="row g-4">
+        {/* Booking Form */}
         <div className="col-md-6">
           <div className="card shadow-sm p-4">
             <h2 className="h5 mb-3">Booking System</h2>
@@ -263,6 +266,7 @@ function Home() {
           </div>
         </div>
 
+        {/* Service Report */}
         <div className="col-md-6">
           <div className="card shadow-sm p-4 h-100">
             <h2 className="h5 mb-3">Service Report</h2>
@@ -306,13 +310,13 @@ function Home() {
         </div>
       </div>
 
+      {/* Worker & Admin Panels */}
       {user && user.role === "worker" && (
         <div className="card shadow-sm p-4 mt-4">
           <h2 className="h5 mb-3">Worker Panel</h2>
           <p className="text-muted">
             Navigate to "Worker Panel" in the navbar for detailed view.
           </p>
-          {/* This section is primarily illustrative, full functionality in WorkerPanel.js */}
         </div>
       )}
 
@@ -338,12 +342,25 @@ function Home() {
           </ul>
         </div>
       )}
+
+      {/* Toast Component */}
       <Toast
         message={toastMessage}
         type={toastType}
         show={showToast}
         onClose={() => setShowToast(false)}
       />
+
+      {/* ✅ WhatsApp Floating Button */}
+      {/* ✅ WhatsApp Floating Button */}
+      <a
+        href="https://wa.me/919998460334?text=Hello%20RepairZone!%20I%20need%20assistance%20with%20a%20service."
+        className="whatsapp-float"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <MessageCircle size={28} />
+      </a>
     </div>
   );
 }
