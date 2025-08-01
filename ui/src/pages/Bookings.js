@@ -6,7 +6,6 @@ import Toast from "../components/Toast";
 import { apiCall } from "../api";
 import { useAuth } from "../context/AuthContext";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
 
 function Bookings() {
   const { user } = useAuth();
