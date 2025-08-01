@@ -6,6 +6,7 @@ import Toast from "../components/Toast";
 import { apiCall } from "../api";
 import { useAuth } from "../context/AuthContext";
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 function Bookings() {
   const { user } = useAuth();
@@ -20,15 +21,19 @@ function Bookings() {
   const upiId = "dharmeshpanchal3236@oksbi";
   const payeeName = "RepairZone";
 
+  // ✅ Load paid bookings from localStorage on mount
+  useEffect(() => {
+    const storedPaidBookings = JSON.parse(localStorage.getItem("paidBookings")) || [];
+    setPaidBookings(storedPaidBookings);
+  }, []);
+
   // ✅ Handle UPI Payment
   const handleUPIPayment = (booking) => {
-    const amount = "1200"; // Fixed or dynamic
+    const amount = "1200";
     const note = `Payment for booking ${booking._id}`;
     const upiUrl = `upi://pay?pa=${encodeURIComponent(
       upiId
-    )}&pn=${encodeURIComponent(payeeName)}&am=${amount}&tn=${encodeURIComponent(
-      note
-    )}&cu=INR`;
+    )}&pn=${encodeURIComponent(payeeName)}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`;
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -38,19 +43,20 @@ function Bookings() {
       window.open(
         `https://pay.google.com/gp/p/u/?pa=${encodeURIComponent(
           upiId
-        )}&pn=${encodeURIComponent(
-          payeeName
-        )}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`,
+        )}&pn=${encodeURIComponent(payeeName)}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`,
         "_blank"
       );
     }
 
-    setPaymentInProgress(booking._id); // Show confirm button
+    setPaymentInProgress(booking._id);
   };
 
   // ✅ Confirm Payment
   const confirmPayment = (booking) => {
-    setPaidBookings((prev) => [...prev, booking._id]);
+    const updatedPaidBookings = [...paidBookings, booking._id];
+    setPaidBookings(updatedPaidBookings);
+    localStorage.setItem("paidBookings", JSON.stringify(updatedPaidBookings)); // ✅ Save to localStorage
+
     generateReceiptPDF(booking, user, { mode: "UPI", amount: 1200 });
     showToastMessage("Payment successful! Receipt downloaded.", "success");
     setPaymentInProgress(null);
@@ -87,7 +93,7 @@ function Bookings() {
     setShowToast(true);
   };
 
-  // ✅ Generate PDF Receipt
+  // ✅ Generate PDF Receipt (unchanged)
   const generateReceiptPDF = (booking, user, payment) => {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
 
@@ -114,7 +120,6 @@ function Bookings() {
 
     currentY = 100;
 
-    // Booking Details Title
     doc.setFontSize(18);
     doc.setTextColor(30, 144, 255);
     doc.setFont("helvetica", "bold");
@@ -126,7 +131,6 @@ function Bookings() {
 
     currentY += 20;
 
-    // Booking info
     const info = [
       { label: "Receipt ID", value: booking?._id || "N/A" },
       { label: "Customer Name", value: user?.name || "N/A" },
@@ -135,18 +139,13 @@ function Bookings() {
       { label: "Service", value: booking?.service?.name || "N/A" },
       {
         label: "Date",
-        value: booking?.date
-          ? new Date(booking.date).toLocaleDateString()
-          : "N/A",
+        value: booking?.date ? new Date(booking.date).toLocaleDateString() : "N/A",
       },
       { label: "Worker", value: booking?.worker?.name || "N/A" },
       { label: "Time", value: booking?.time || "N/A" },
       { label: "Status", value: booking?.status || "N/A" },
       { label: "Payment Mode", value: payment?.mode || "N/A" },
-      {
-        label: "Amount Paid",
-        value: payment?.amount ? `${payment.amount.toFixed(2)}Rs` : "N/A",
-      },
+      { label: "Amount Paid", value: payment?.amount ? `${payment.amount.toFixed(2)} Rs` : "N/A" },
     ];
 
     doc.setFontSize(12);
@@ -164,7 +163,6 @@ function Bookings() {
       currentY += lineHeight;
     });
 
-    // Footer
     currentY += 20;
     doc.setDrawColor(200);
     doc.line(margin, currentY, pageWidth - margin, currentY);
@@ -211,11 +209,7 @@ function Bookings() {
               {bookings.map((booking) => (
                 <tr key={booking._id}>
                   <td>{booking.service?.name || "N/A"}</td>
-                  <td>
-                    {booking.date
-                      ? new Date(booking.date).toLocaleDateString()
-                      : "N/A"}
-                  </td>
+                  <td>{booking.date ? new Date(booking.date).toLocaleDateString() : "N/A"}</td>
                   <td>{booking.time || "N/A"}</td>
                   <td>{booking.phoneNumber || "N/A"}</td>
                   <td>{booking.address || "N/A"}</td>
@@ -238,12 +232,10 @@ function Bookings() {
                   </td>
                   <td>{booking.worker?.name || "N/A"}</td>
                   <td>
-                    {booking.paymentStatus === "Paid" ||
-                    paidBookings.includes(booking._id) ? (
+                    {booking.paymentStatus === "Paid" || paidBookings.includes(booking._id) ? (
                       <span className="badge bg-success">Paid</span>
                     ) : (
                       <>
-                        {/* <span className="badge bg-danger">Unpaid</span> */}
                         {paymentInProgress === booking._id ? (
                           <button
                             className="btn btn-warning btn-sm mt-1"
@@ -274,12 +266,7 @@ function Bookings() {
           </table>
         </div>
       )}
-      <Toast
-        message={toastMessage}
-        type={toastType}
-        show={showToast}
-        onClose={() => setShowToast(false)}
-      />
+      <Toast message={toastMessage} type={toastType} show={showToast} onClose={() => setShowToast(false)} />
     </div>
   );
 }
