@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
   Hand,
@@ -34,6 +34,7 @@ const serviceIcons = {
 
 function Home() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(true);
   const [loadingBooking, setLoadingBooking] = useState(false);
@@ -101,25 +102,28 @@ function Home() {
     }
 
     setLoadingBooking(true);
-    setBookingStatus(null); // Clear previous status
+    setBookingStatus(null);
 
     try {
-      const response = await apiCall(
+      await apiCall(
         "/api/bookings",
         "POST",
         {
           serviceId: selectedService,
           date: bookingDate,
           time: bookingTime,
-          phoneNumber, // Add phone number
-          address, // Add address
+          phoneNumber,
+          address,
         },
         localStorage.getItem("token")
       );
 
       showToastMessage("Service booked successfully!", "success");
       setBookingStatus({ message: "Booking Confirmed!", type: "success" });
-      // Optionally clear form fields after successful booking
+
+      // ✅ Redirect immediately
+      navigate("/bookings", { replace: true });
+
       setPhoneNumber("");
       setAddress("");
     } catch (error) {
@@ -160,7 +164,15 @@ function Home() {
           </div>
         )}
       </div>
-
+      <div className="mb-4 card text-center shadow-sm p-4">
+        <h2 className="h5 mb-3">
+          {" "}
+          Price Per Days (9:00am to 6:00pm) If You Want
+        </h2>
+        <p className="text-muted">
+          <strong>Rs. 1200</strong> (All Services Included)
+        </p>
+      </div>
       <div className="row g-4">
         <div className="col-md-6">
           <div className="card shadow-sm p-4">
@@ -288,7 +300,7 @@ function Home() {
                   : "d-none"
               } fade-in`}
             >
-              {bookingStatus && bookingStatus.message}
+              {(bookingStatus && bookingStatus.message) || "No updates yet."}
             </div>
           </div>
         </div>
