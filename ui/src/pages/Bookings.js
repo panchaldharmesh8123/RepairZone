@@ -6,7 +6,6 @@ import Toast from "../components/Toast";
 import { apiCall } from "../api";
 import { useAuth } from "../context/AuthContext";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
 
 function Bookings() {
   const { user } = useAuth();
@@ -23,7 +22,8 @@ function Bookings() {
 
   // ✅ Load paid bookings from localStorage on mount
   useEffect(() => {
-    const storedPaidBookings = JSON.parse(localStorage.getItem("paidBookings")) || [];
+    const storedPaidBookings =
+      JSON.parse(localStorage.getItem("paidBookings")) || [];
     setPaidBookings(storedPaidBookings);
   }, []);
 
@@ -33,7 +33,9 @@ function Bookings() {
     const note = `Payment for booking ${booking._id}`;
     const upiUrl = `upi://pay?pa=${encodeURIComponent(
       upiId
-    )}&pn=${encodeURIComponent(payeeName)}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`;
+    )}&pn=${encodeURIComponent(payeeName)}&am=${amount}&tn=${encodeURIComponent(
+      note
+    )}&cu=INR`;
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -43,7 +45,9 @@ function Bookings() {
       window.open(
         `https://pay.google.com/gp/p/u/?pa=${encodeURIComponent(
           upiId
-        )}&pn=${encodeURIComponent(payeeName)}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`,
+        )}&pn=${encodeURIComponent(
+          payeeName
+        )}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`,
         "_blank"
       );
     }
@@ -139,13 +143,18 @@ function Bookings() {
       { label: "Service", value: booking?.service?.name || "N/A" },
       {
         label: "Date",
-        value: booking?.date ? new Date(booking.date).toLocaleDateString() : "N/A",
+        value: booking?.date
+          ? new Date(booking.date).toLocaleDateString()
+          : "N/A",
       },
       { label: "Worker", value: booking?.worker?.name || "N/A" },
       { label: "Time", value: booking?.time || "N/A" },
       { label: "Status", value: booking?.status || "N/A" },
       { label: "Payment Mode", value: payment?.mode || "N/A" },
-      { label: "Amount Paid", value: payment?.amount ? `${payment.amount.toFixed(2)} Rs` : "N/A" },
+      {
+        label: "Amount Paid",
+        value: payment?.amount ? `${payment.amount.toFixed(2)} Rs` : "N/A",
+      },
     ];
 
     doc.setFontSize(12);
@@ -209,7 +218,11 @@ function Bookings() {
               {bookings.map((booking) => (
                 <tr key={booking._id}>
                   <td>{booking.service?.name || "N/A"}</td>
-                  <td>{booking.date ? new Date(booking.date).toLocaleDateString() : "N/A"}</td>
+                  <td>
+                    {booking.date
+                      ? new Date(booking.date).toLocaleDateString()
+                      : "N/A"}
+                  </td>
                   <td>{booking.time || "N/A"}</td>
                   <td>{booking.phoneNumber || "N/A"}</td>
                   <td>{booking.address || "N/A"}</td>
@@ -232,7 +245,8 @@ function Bookings() {
                   </td>
                   <td>{booking.worker?.name || "N/A"}</td>
                   <td>
-                    {booking.paymentStatus === "Paid" || paidBookings.includes(booking._id) ? (
+                    {booking.paymentStatus === "Paid" ||
+                    paidBookings.includes(booking._id) ? (
                       <span className="badge bg-success">Paid</span>
                     ) : (
                       <>
@@ -266,7 +280,12 @@ function Bookings() {
           </table>
         </div>
       )}
-      <Toast message={toastMessage} type={toastType} show={showToast} onClose={() => setShowToast(false)} />
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        show={showToast}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 }
